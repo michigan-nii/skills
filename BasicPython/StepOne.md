@@ -1,4 +1,4 @@
-# Reading data from a file
+# Getting started with variables and repeating things
 
 At some point or another, most projects you might create with Python will
 involve reading and/or writing to files.  So, a good place to start your
