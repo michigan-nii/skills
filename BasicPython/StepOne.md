@@ -94,4 +94,94 @@ at a Python prompt.  This bit, `TypeError: unsupported operand type(s) for +:
 and you can only use one type with a `+` sign.  We converted the string to
 the integer in the second attempt above.
 
+So, the `+` sign means two different things depending whether it has strings
+on either side or integers.
 
+Numbers are nice because you can generate them.  To generate integers, Python
+uses the `range()` function.  Here, `range` is the function name, we add the
+`()` to indicate so, and we will often just say 'uses `range()`' and you'll
+know we mean a function because of the parentheses.  The function will do
+things with whatever is inside the parentheses.
+
+In this case `range()` will generate a list of integers that start at 0 and
+go to one less than whatever integer you put in the parentheses.  A list is
+another variable type.  It holds multiple elements.
+
+```
+>>> range(5)
+[0, 1, 2, 3, 4]
+>>> type(range(5))
+<type 'list'>
+```
+
+To do something to each element of a list (or other multi-element variables),
+you can use `for`.
+
+```
+>>> for item in range(5):
+...     print item
+...
+0
+1
+2
+3
+4
+```
+
+So, Python took each element out of the list, and for each one, it printed it.
+A couple of things to note about this.  First, the colon at the end of the
+`for` line indicates that more is to come and should be done for each item.
+Second, the lines that are part of the `for` loop (what we call this type
+of action) are all indented _exactly the same way_.  Here, we used four
+spaces.  You should, too.  If you use four spaces on one line, and three on
+the next, you will get an indentation error, and you won't like it.  Be
+careful with Tab characters!
+
+We have almost all the pieces we want.  It's usually a good idea to _pad_
+names so that all the names of similar things have the same number of
+characters.  For subjects, you'll often see (and almost certainly want)
+_left padding with zeros_ in your subject IDs.  That `for` loop above left
+the variable `item` with the value `4`, so to pad that to three characters
+we use this
+
+```
+print('{:03d}').format(item)
+```
+
+We know what `print` does, but we're adding new stuff to it; `print` is really
+a function, and we can use it without parentheses if we only want a simple
+print.  Here we are adding a string inside the parentheses (we know it's a
+string because it's quoted).  The braces are used as a _placeholder_ for
+things inside the `.format()`.  The `03d` is the format we want the string to
+have (the leading 0 is how you indicate 0-padding, the 3 is the width, and
+the `d` indicates integer (I don't know how they came up with that).  The
+`:` is there to separate the placeholder name (which we're not using here)
+from the format.
+
+Here are two examples, one where the braces are filled by the things in the
+`format()` in order as listed, and one where they are named and can be in
+a different order.
+
+```
+print('{subjID:04d} and {int}').format(int=i, subjID=item)
+print('{:03d} and {}').format(item, i)
+```
+
+So, combining all this together, we can make the skeleton of a program that
+will do something useful for each subject from 0 to 4.
+
+```
+for id in range(5):
+    subjID = 'subj{:03d}'.format(id)
+    print "I did something useful to subject: {}".format(subjID)
+```
+
+which results in
+
+```
+I did something useful to subject: subj000
+I did something useful to subject: subj001
+I did something useful to subject: subj002
+I did something useful to subject: subj003
+I did something useful to subject: subj004
+```
