@@ -1,11 +1,6 @@
 # Getting started with variables and repeating things
 
-At some point or another, most projects you might create with Python will
-involve reading and/or writing to files.  So, a good place to start your
-excursion with Python is doing that.  Along the way, we need to learn some
-other skills and techniques.
-
-# Variables and variable types
+## Variables and variable types
 
 When doing work with data, there will often be a list of files that need
 to be worked with.  One of the most common ways of doing that is to assign
@@ -45,6 +40,8 @@ f = 0.0
 <type 'float'>
 ```
 
+## The magically changing meaning of +
+
 Python reuses symbols in what tries to be sensible ways depending on context.
 For example,
 
@@ -63,6 +60,8 @@ My Evil Twin
 0.0
 ```
 
+## Changing the type of a variable
+
 Sometimes you will have a number and wish it were a string, and vice-versa.
 You can convert among them like this.
 
@@ -74,6 +73,8 @@ i = 5
 i + not_an_integer
 i + int(not_an_integer)
 ```
+
+## Scary error messages demystified
 
 If you're typing along, you will have got _Traceback_, which is Python-speak
 for an error.  It shows you the steps it was taking when it got to the error
@@ -97,6 +98,8 @@ the integer in the second attempt above.
 So, the `+` sign means two different things depending whether it has strings
 on either side or integers.
 
+## Generating a sequence of numbers
+
 Numbers are nice because you can generate them.  To generate integers, Python
 uses the `range()` function.  Here, `range` is the function name, we add the
 `()` to indicate so, and we will often just say 'uses `range()`' and you'll
@@ -113,6 +116,11 @@ another variable type.  It holds multiple elements.
 >>> type(range(5))
 <type 'list'>
 ```
+A list is a collection of other types of variables.  Lists have nice ways
+to refer to individual elements and to go through each element in turn.  We'll
+learn lots more about lists and other multi-element variable types later.
+
+## Doing something to each element of a list
 
 To do something to each element of a list (or other multi-element variables),
 you can use `for`.
@@ -136,6 +144,8 @@ of action) are all indented _exactly the same way_.  Here, we used four
 spaces.  You should, too.  If you use four spaces on one line, and three on
 the next, you will get an indentation error, and you won't like it.  Be
 careful with Tab characters!
+
+## Formatting string for printing and other things
 
 We have almost all the pieces we want.  It's usually a good idea to _pad_
 names so that all the names of similar things have the same number of
@@ -166,6 +176,8 @@ a different order.
 print('{subjID:04d} and {int}').format(int=i, subjID=item)
 print('{:03d} and {}').format(item, i)
 ```
+
+## Remind me why we did this...
 
 So, combining all this together, we can make the skeleton of a program that
 will do something useful for each subject from 0 to 4.
