@@ -1,2 +1,4 @@
-# skills
-Material for and from the UM NII Computing Skills series
+# University of Michigan Neuroimaging Initiative
+## NII Computing Skills series
+
+
