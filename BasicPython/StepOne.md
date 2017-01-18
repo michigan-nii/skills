@@ -93,10 +93,27 @@ The `File "<stdin>", line 1, in <module>` means it was doing something typed
 at a Python prompt.  This bit, `TypeError: unsupported operand type(s) for +:
 'int' and 'str'`, means that there were two different types of variables,
 and you can only use one type with a `+` sign.  We converted the string to
-the integer in the second attempt above.
+the integer in the second attempt above, and that corrected the problem.
 
 So, the `+` sign means two different things depending whether it has strings
 on either side or integers.
+
+As with many things, pushing close to the edge of our abilities is the best
+way to extend the edge of our abilities.  It is sometimes useful, and can
+even be kind of 'fun', to try something you _know_ is wrong to see what the
+error message looks like.  The more error messages you see, the easier they
+become to understand, which leads to making them go away easier.
+
+Here are a couple of things to get you started.  Try these in a brand new
+Python session.
+
+```
+>>> a + b
+>>> import my_stuff
+>>> print b[0]
+>>> f = 'Not a list'
+>>> f.append('some text')
+```
 
 ## Generating a sequence of numbers
 
@@ -197,3 +214,5 @@ I did something useful to subject: subj002
 I did something useful to subject: subj003
 I did something useful to subject: subj004
 ```
+In the next step, we'll try to actually do something useful instead of just
+talking about it.
