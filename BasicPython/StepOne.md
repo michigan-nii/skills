@@ -8,7 +8,7 @@ each filename to a variable, then do something with that file, then move on
 to the next filename.  We can't, of course, do that, until we know how to
 assign values to variables.  So, let's start there.
 
-```
+```python
 filename = 'subj001'
 
 ```
@@ -29,7 +29,7 @@ are string, integer, and float (numeric with decimals).  You can ask Python
 what a variable is, as shown below, along with creating and querying the two
 numeric types.
 
-```
+```python
 >>> type(filename)
 <type 'str'>
 >>> i = 0
@@ -45,7 +45,7 @@ f = 0.0
 Python reuses symbols in what tries to be sensible ways depending on context.
 For example,
 
-```
+```python
 first = 'Evil'
 last = 'Twin'
 phrase = 'My' + ' ' + first + " " + last
@@ -53,7 +53,7 @@ phrase = 'My' + ' ' + first + " " + last
 
 You can `print` most variables
 
-```
+```python
 >>> print phrase
 My Evil Twin
 >>> print f
@@ -65,7 +65,7 @@ My Evil Twin
 Sometimes you will have a number and wish it were a string, and vice-versa.
 You can convert among them like this.
 
-```
+```python
 print 'subj' + str(i)
 not_an_integer = '25'
 type(not_an_integer)
@@ -82,7 +82,7 @@ and it tries to give you helpful information.  As you get more experience, the
 information will become more helpful (really).  This is what it looked like
 when I did it.
 
-```
+```python
 >>> i + not_an_integer
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
@@ -107,7 +107,7 @@ become to understand, which leads to making them go away easier.
 Here are a couple of things to get you started.  Try these in a brand new
 Python session.
 
-```
+```python
 >>> a + b
 >>> import my_stuff
 >>> print b[0]
@@ -127,7 +127,7 @@ In this case `range()` will generate a list of integers that start at 0 and
 go to one less than whatever integer you put in the parentheses.  A list is
 another variable type.  It holds multiple elements.
 
-```
+```python
 >>> range(5)
 [0, 1, 2, 3, 4]
 >>> type(range(5))
@@ -142,7 +142,7 @@ learn lots more about lists and other multi-element variable types later.
 To do something to each element of a list (or other multi-element variables),
 you can use `for`.
 
-```
+```python
 >>> for item in range(5):
 ...     print item
 ...
@@ -171,7 +171,7 @@ _left padding with zeros_ in your subject IDs.  That `for` loop above left
 the variable `item` with the value `4`, so to pad that to three characters
 we use this
 
-```
+```python
 print('{:03d}').format(item)
 ```
 
@@ -189,7 +189,7 @@ Here are two examples, one where the braces are filled by the things in the
 `format()` in order as listed, and one where they are named and can be in
 a different order.
 
-```
+```python
 print('{subjID:04d} and {int}').format(int=i, subjID=item)
 print('{:03d} and {}').format(item, i)
 ```
@@ -199,7 +199,7 @@ print('{:03d} and {}').format(item, i)
 So, combining all this together, we can make the skeleton of a program that
 will do something useful for each subject from 0 to 4.
 
-```
+```python
 for id in range(5):
     subjID = 'subj{:03d}'.format(id)
     print "I did something useful to subject: {}".format(subjID)
@@ -207,7 +207,7 @@ for id in range(5):
 
 which results in
 
-```
+```python
 I did something useful to subject: subj000
 I did something useful to subject: subj001
 I did something useful to subject: subj002
