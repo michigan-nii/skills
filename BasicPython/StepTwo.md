@@ -205,3 +205,10 @@ Working on anat
 Working on func
 ```
 
+At this point, we have to decide, do we add the final loop that we need
+&ndash; the one that creates the folder inside each `anat` and `func` folder
+$ndash; or do we first create the `anat` and `func` folders?  In future,
+this will be a matter for personal preference, but to move things along,
+let's create the `anat` and `func` folders now.
+
+## Creating folders and changing to them
