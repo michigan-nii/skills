@@ -236,16 +236,267 @@ Let's try `os.mkdir()` and `os.chdir()` see what happens.
 That seems to have worked!  There are two ways you might return to the
 folder you came from.  What are they? [Answer at the bottom.]
 
+OK.  We have a couple more tools we need.  Let's go ahead and make the
+first two levels of directories.  We'll take our script that just printed
+and add some work to it.  (This isn't going to work if you haven't been
+typing along.  Make sure you have the `subjIDs` list created and that it
+has at least one entry.)
+
+```python
+for subject in subjIDs:
+    print "Working on subject", subject
+    # We need to create these
+    os.mkdir(subject)
+    # We need to create the next folders inside the subject folder
+    os.chdir(subject)
+    for subdir in [ 'anat', 'func' ]:
+        print "  Working on", subdir, "in", os.getcwd()
+        os.mkdir(subdir)
+    # When we are done with work in a subject folder, we need to
+    # go back.  Note the indentation change.  If this is indented
+    # to the same level as making subdir, it will go bad for you.
+    os.chdir('..')
+```
+OK, so that works.  Once.  If you try to run that again, you will get
+errors because you are trying to create folders that already exist.
+Wouldn't it be nice if that didn't happen?
+
+## Try it, you'll like it
+
+We're going to take a little time with this because it will be important
+later on.  You can ask Python to _try_ something, and if it doesn't
+work, Python will _raise an exception_, as in "I take exception to that,
+you cad!"  You can then provide an alternate something to do in that
+(or those) cases.  Let's use some of what we've learned to figure out
+an exception and what do to when we get one.
+
+We just created some subject folders.  What happens if we try to create
+the same folder again?
+
+```python
+>>> os.mkdir('subj001')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+OSError: [Errno 17] File exists: 'subj001'
+```
+
+Well, there's that traceback stuff again, but we can ignore that for
+now and concentrate on the `OSError: [Errno 17] File exists: 'subj001'`.
+The first thing there, is the _exception type_: `OSError`.  The second
+bit is the error number, and final bit is the error message.
+
+You need to know the error conditions to figure out what to do about them,
+and one way to do that is to induce them, as we have here.  There are two
+parts to this method, the first is what you want to try, and the second
+is what to do when trying fails.  Here's a first pass.
+
+```python
+try:
+    os.mkdir('subj001')
+except OSError:
+    print("subj001 exists")
+```
+If you type that at a Python prompt, it should look like this:
+
+```python
+>>> try:
+...     os.mkdir('subj001')
+... except OSError:
+...     print("subj001 exists")
+... 
+subj001 exists
+```
+
+Let's get a little fancier and also learn another really useful
+thingy, the conditional.  Sometimes you want to do one thing _if_
+some condition pertains and another if not.  We do this with `if`,
+`elif`, and `else`.  Let's see how this works.
+
+```python
+>>> if os.path.isdir('subj001'):
+...     print "It's a dir!"
+... elif os.path.isfile('subj001'):
+...     print "It's a file!"
+... else:
+...     print "Call superman, it's something weird!"
+... 
+It's a dir!
+```
+
+Notice, I snuck in a couple of new functions.  There are many
+functions under `os.path` that can help with file and folder
+names and such.  But, to return to the main story, that little
+chunk first inquires whether `subj001` is a directory; if it is
+it says so.  If it's not a directory, it goes to the next 
+enumerated condition and checks whether it is a file; if it is
+it says so.  If none of the preceding enumerated conditions are true,
+then the `else` is invoked.
+
+We care about this because there are two ways that creating a
+directory could fail, and the error message doesn't distinguish
+among them.  We get the same error message whether `subj001` is
+a file or a folder.  If it's a folder, we can probably go on to
+do with it what we want.  If it's a file, though, we don't want
+to try to change directory to it.  So, let's dress up our trying.
+
+```python
+try:
+    os.mkdir('subj001')
+except OSError:
+    if os.path.isdir('subj001'):
+        print "OK then.  Continue."
+    elif os.path.isfile('subj001'):
+        print "It's a file!  Stop what you're doing"
+    else:
+        print "Call superman, it's something weird!"
+```
+
+Finally, let's pull all this together into one big jumble, and try
+to write a program that will create the first two levels of the tree.
+That is, it will create three sets of folders that look like
+
+```
+[subjectID]/
+    anatomy/
+    func/
+    raw/
+```
+
+We have this bit from a while back that creates the folders if they
+aren't there.
+
+```python
+for subject in subjIDs:
+    print "Working on subject", subject
+    # We need to create these
+    os.mkdir(subject)
+    # We need to create the next folders inside the subject folder
+    os.chdir(subject)
+    for subdir in [ 'anat', 'func' ]:
+        print "  Working on", subdir, "in", os.getcwd()
+        os.mkdir(subdir)
+    # When we are done with work in a subject folder, we need to
+    # go back.  Note the indentation change.  If this is indented
+    # to the same level as making subdir, it will go bad for you.
+    os.chdir('..')
+```
+
+and into that we want to put our groovy new error checking thing.
+
+So, we want to find all the uses of `os.mkdir()` and replace them with
+our `try...except`.  When doing something like this, it's a good idea
+to just comment the thing you're replacing and put the replacement
+below it.  Don't forget to adjust the indents.  Also, when copying
+and pasting, don't do what I did and leave the `'subj001'` as the
+thing being checked everywhere &ndash; use the variable name
+for the folder you're trying to check on.
+
+```python
+for subject in subjIDs:
+    print "Working on subject", subject
+    # We need to create these
+    # os.mkdir(subject)
+    try:
+        os.mkdir(subject)
+    except OSError:
+        if os.path.isdir(subject):
+            print "OK then.  Continue."
+        elif os.path.isfile(subject):
+            print "It's a file!  Stop what you're doing"
+        else:
+            print "Call superman, it's something weird!"
+    # We need to create the next folders inside the subject folder
+    os.chdir(subject)
+    for subdir in [ 'anat', 'func' ]:
+        print "  Working on", subdir, "in", os.getcwd()
+        # os.mkdir(subdir)
+        try:
+            os.mkdir('subj001')
+        except OSError:
+            if os.path.isdir(subdir):
+                print "OK then.  Continue."
+            elif os.path.isfile(subdir):
+                print "It's a file!  Stop what you're doing"
+            else:
+                print "Call superman, it's something weird!"
+    # When we are done with work in a subject folder, we need to
+    # go back.  Note the indentation change.  If this is indented
+    # to the same level as making subdir, it will go bad for you.
+    os.chdir('..')
+```
+
+Finally, we're going to introduce one last thing.  We can import specific
+things from a library.  In that program above, we actually want to stop
+the program in some places.  There is a library called `sys` that has such
+a function, `sys.exit`, and we're going to import just that function but
+call it `bail_out`.
+
+```python
+from sys import exit as bail_out
+```
+
+Now, we're going to have one last version of this where we quit the
+program if something goes wrong.
+
+```python
+for subject in subjIDs:
+    print "Working on subject", subject
+    # We need to create these
+    # os.mkdir(subject)
+    try:
+        os.mkdir(subject)
+    except OSError:
+        if os.path.isdir(subject):
+            print "OK then.  Continue."
+        elif os.path.isfile(subject):
+            print "It's a file!  Stop what you're doing"
+            bail_out()
+        else:
+            print "Call superman, it's something weird!"
+            bail_out()
+    # We need to create the next folders inside the subject folder
+    os.chdir(subject)
+    for subdir in [ 'anat', 'func' ]:
+        print "  Working on", subdir, "in", os.getcwd()
+        # os.mkdir(subdir)
+        try:
+            os.mkdir('subj001')
+        except OSError:
+            if os.path.isdir(subdir):
+                print "OK then.  Continue."
+            elif os.path.isfile(subdir):
+                print "It's a file!  Stop what you're doing"
+                bail_out()
+            else:
+                print "Call superman, it's something weird!"
+                bail_out()
+    # When we are done with work in a subject folder, we need to
+    # go back.  Note the indentation change.  If this is indented
+    # to the same level as making subdir, it will go bad for you.
+    os.chdir('..')
+```
+
+-----
+
+### About what you read on the internet
 
 Step into a new window in your browser, and search the web for the text "python
 make directory".  One of the top items returned (if you use the Evil Google)
 is to the web page
 http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary
 where you can see that there are lots of ways to do this, and many opinions
-about the One True Best Way.
+about the One True Best Way.  You want to learn enough, and experiment enough,
+to be able to look at the sage and not-so-sage advice you find and
+tell whether it is good or bad, worth trying or not, and whether it is
+complete enough for what you need or needs to be given more thought.
 
------
-Returning to the folder whence you came.  You can save the folder you are in
+Remember, on the internet, you never know whether they're a dog.
+
+https://en.wikipedia.org/wiki/On_the_Internet,_nobody_knows_you're_a_dog
+
+### Returning to the folder whence you came
+
+You can save the folder you are in
 prior to using `os.chdir()`, then `os.chdir()` explicitly to it.
 
 ```python
