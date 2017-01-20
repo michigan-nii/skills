@@ -207,8 +207,60 @@ Working on func
 
 At this point, we have to decide, do we add the final loop that we need
 &ndash; the one that creates the folder inside each `anat` and `func` folder
-$ndash; or do we first create the `anat` and `func` folders?  In future,
+&ndash; or do we first create the `anat` and `func` folders?  In future,
 this will be a matter for personal preference, but to move things along,
 let's create the `anat` and `func` folders now.
 
 ## Creating folders and changing to them
+
+We found the `getcwd()` function in the `os` module, so that's a good place
+to look for functions to make directories and change to them.  If you go to
+the Python documentation web site for the `os` library,
+https://docs.python.org/2/library/os.html
+you can search for 'directory' and eventually find it.  If you know the
+command to create directories in Linux or at the Windows command prompt,
+you might search for 'mkdir' and find it right away.  Similarly, hunt
+around until you find `chdir()`
+
+Let's try `os.mkdir()` and `os.chdir()` see what happens.
+
+```python
+>>> os.getcwd()
+'/Users/grundoon'
+>>> os.mkdir('Example')
+>>> os.chdir('Example')
+>>> os.getcwd()
+'/Users/grundoon/Example'
+```
+
+That seems to have worked!  There are two ways you might return to the
+folder you came from.  What are they? [Answer at the bottom.]
+
+
+Step into a new window in your browser, and search the web for the text "python
+make directory".  One of the top items returned (if you use the Evil Google)
+is to the web page
+http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary
+where you can see that there are lots of ways to do this, and many opinions
+about the One True Best Way.
+
+-----
+Returning to the folder whence you came.  You can save the folder you are in
+prior to using `os.chdir()`, then `os.chdir()` explicitly to it.
+
+```python
+old_dir = getcwd()
+os.chdir('Example')
+# Do something fabulous here
+os.chdir(old_dir)
+os.getcwd()
+```
+
+Or, you can also use the 'name' of the directory above the current one
+
+```python
+os.chdir('Example')
+# Do something fabulous here
+os.chdir('..')
+os.getcwd()
+```
