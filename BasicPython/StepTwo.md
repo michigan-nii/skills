@@ -476,6 +476,12 @@ for subject in subjIDs:
     os.chdir('..')
 ```
 
+## What's ahead?
+
+In the next episode, we'll look at how to make functions of our own, so we
+don't have to copy large blocks of text around.  Like that `try...except` that
+we have in two places (and will have in a third).
+
 -----
 
 ### About what you read on the internet
