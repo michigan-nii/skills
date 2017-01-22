@@ -411,7 +411,7 @@ for subject in subjIDs:
         print "  Working on", subdir, "in", os.getcwd()
         # os.mkdir(subdir)
         try:
-            os.mkdir('subj001')
+            os.mkdir(subdir)
         except OSError:
             if os.path.isdir(subdir):
                 print "OK then.  Continue."
@@ -460,7 +460,7 @@ for subject in subjIDs:
         print "  Working on", subdir, "in", os.getcwd()
         # os.mkdir(subdir)
         try:
-            os.mkdir('subj001')
+            os.mkdir(subdir)
         except OSError:
             if os.path.isdir(subdir):
                 print "OK then.  Continue."
