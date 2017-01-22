@@ -521,3 +521,6 @@ os.chdir('Example')
 os.chdir('..')
 os.getcwd()
 ```
+This could be made easier by assigning `'..'` to a variable, then using
+the variable, which would be easier to type.  Sometimes making things
+easier to type is reason enough.
