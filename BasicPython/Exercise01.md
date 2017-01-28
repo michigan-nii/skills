@@ -65,3 +65,16 @@ Just a note, to add a blank line to the end of something printed, use
 ```python
 print("Some text followed by a blank line.\n")
 ```
+
+## Identifying repetition
+
+There will be several lines of repeated code in the final result.  Suppose
+there was a function called `nii_preprocess(step, input_file, prefix)`
+that you would use like this
+
+```python
+    nii_preprocess('physio correction', 'run.nii', 'p')
+```
+
+that could be used.  What do you think the inside of that function
+would look like?
