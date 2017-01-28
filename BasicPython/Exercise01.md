@@ -24,7 +24,7 @@ that, when run, it produces output that looks like this.
 ## Output
 
 ```bash
-$ python my.py 
+$ python preprocessing.py
 Running physio correction on ./func/task/run_01/subj001run.nii to create ./func/task/run_01/subj001prun.nii 
 Running slice timing on ./func/task/run_01/subj001prun.nii to create ./func/task/run_01/subj001pprun.nii 
 Running realignment on ./func/task/run_01/subj001pprun.nii to create ./func/task/run_01/subj001ppprun.nii
@@ -44,6 +44,9 @@ Running realignment on ./func/task/run_01/subj004pprun.nii to create ./func/task
 
 ## Program skeleton
 
+Copy this text to a file called `preprocessing.py`, make the changes,
+and run it to verify the output you get matches the output above.
+
 ```python
 for i in range(???, ???):
     subjID = ??? + ???
@@ -55,4 +58,10 @@ for i in range(???, ???):
     ???
     ???
     . . .
+```
+
+Just a note, to add a blank line to the end of something printed, use
+
+```python
+print("Some text followed by a blank line.\n")
 ```
