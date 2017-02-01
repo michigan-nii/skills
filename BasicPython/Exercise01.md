@@ -25,21 +25,21 @@ that, when run, it produces output that looks like this.
 
 ```bash
 $ python preprocessing.py
-Running physio correction on ./func/task/run_01/subj001run.nii to create ./func/task/run_01/subj001prun.nii 
-Running slice timing on ./func/task/run_01/subj001prun.nii to create ./func/task/run_01/subj001pprun.nii 
-Running realignment on ./func/task/run_01/subj001pprun.nii to create ./func/task/run_01/subj001ppprun.nii
+Running physio correction on ./func/task/run_01/subj001/run.nii to create ./func/task/run_01/subj001/prun.nii 
+Running slice timing on ./func/task/run_01/subj001/prun.nii to create ./func/task/run_01/subj001/tprun.nii 
+Running realignment on ./func/task/run_01/subj001/tprun.nii to create ./func/task/run_01/subj001/rtprun.nii
 
-Running physio correction on ./func/task/run_01/subj002run.nii to create ./func/task/run_01/subj002prun.nii 
-Running slice timing on ./func/task/run_01/subj002prun.nii to create ./func/task/run_01/subj002pprun.nii 
-Running realignment on ./func/task/run_01/subj002pprun.nii to create ./func/task/run_01/subj002ppprun.nii
+Running physio correction on ./func/task/run_01/subj002/run.nii to create ./func/task/run_01/subj002/prun.nii 
+Running slice timing on ./func/task/run_01/subj002/prun.nii to create ./func/task/run_01/subj002/tprun.nii 
+Running realignment on ./func/task/run_01/subj002/tprun.nii to create ./func/task/run_01/subj002/rtprun.nii
 
-Running physio correction on ./func/task/run_01/subj003run.nii to create ./func/task/run_01/subj003prun.nii 
-Running slice timing on ./func/task/run_01/subj003prun.nii to create ./func/task/run_01/subj003pprun.nii 
-Running realignment on ./func/task/run_01/subj003pprun.nii to create ./func/task/run_01/subj003ppprun.nii
+Running physio correction on ./func/task/run_01/subj003/run.nii to create ./func/task/run_01/subj003/prun.nii 
+Running slice timing on ./func/task/run_01/subj003/prun.nii to create ./func/task/run_01/subj003/tprun.nii 
+Running realignment on ./func/task/run_01/subj003/tprun.nii to create ./func/task/run_01/subj003/rtprun.nii
 
-Running physio correction on ./func/task/run_01/subj004run.nii to create ./func/task/run_01/subj004prun.nii 
-Running slice timing on ./func/task/run_01/subj004prun.nii to create ./func/task/run_01/subj004pprun.nii 
-Running realignment on ./func/task/run_01/subj004pprun.nii to create ./func/task/run_01/subj004ppprun.nii
+Running physio correction on ./func/task/run_01/subj004/run.nii to create ./func/task/run_01/subj004/prun.nii 
+Running slice timing on ./func/task/run_01/subj004/prun.nii to create ./func/task/run_01/subj004/tprun.nii 
+Running realignment on ./func/task/run_01/subj004/tprun.nii to create ./func/task/run_01/subj004/rtprun.nii
 ```
 
 ## Program skeleton
