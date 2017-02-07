@@ -45,8 +45,36 @@ You might use something like that to print the name and version of your
 program when it starts, for example, so that's not an entirely useless
 example.  
 
-We can define a variable
+We can define a function called, say `up_one()` that simply changes up
+one directory level.  We can only do that because the name for "up one level"
+is always defined and is always the same.
 
+```
+def up_one():
+    parent = '..'
+    os.chdir(parent)
+```
+
+What happens if `os` wasn't imported?  Try it.
+
+This is where a try can come in handy.
+
+```
+try:
+    os.chdir('..')
+except NameError:
+    import os
+    os.chdir('..')
+```
+    
+I cheated and tried it first.  That reported the following scary
+message.
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'os' is not defined
+```
 We can get fancier with our functions by making them able to read values
 when we use them.  Consider this definition,
 
@@ -57,7 +85,70 @@ def my_something(thing):
 
 That will be very useful.
 
-glob
+Go to
+
+http://nipy.org/nibabel/coordinate_systems.html
+
+and download `someones_epi.nii.gz`
+
+http://nipy.org/nibabel/_downloads/someones_epi.nii.gz
+
+Here is an example of reading an `.nii` file (and some other
+things).  For the moment, let's just go through the first block.
+
+[  Install `nibabel`  ]
+
+```
+import nibabel as nib
+epi_img = nib.load('Downloads/someones_epi.nii.gz')
+epi_img_data = epi_img.get_data()
+epi_img_data.shape
+epi_img_header = epi_img.header
+```
+
+For this to work, you must use IPython, not just regular python.
+That should Just Work if you are on the Skills machine and using
+VNC.
+
+```
+import matplotlib.pyplot as plt
+
+def show_slices(slices):
+   """ Function to display row of image slices """
+   fig, axes = plt.subplots(1, len(slices))
+   for i, slice in enumerate(slices):
+       axes[i].imshow(slice.T, cmap="gray", origin="lower")
+
+slice_0 = epi_img_data[26, :, :]
+slice_1 = epi_img_data[:, 30, :]
+slice_2 = epi_img_data[:, :, 16]
+show_slices([slice_0, slice_1, slice_2])
+plt.suptitle("Center slices for EPI image")
+```
+
+
+
+Let's look at the header of an image
+
+See http://nipy.org/nibabel/nibabel_images.html
+
+```
+import os
+import numpy as np
+from nibabel.testing import data_path
+example_file = os.path.join(data_path, 'example4d.nii.gz')
+import nibabel as nib
+img = nib.load(example_file)
+header = img.header
+header['descrip']
+print(header['descrip'])
+```
+
 what's a dictionary
   keys :  values
-get header information from .nii files in several folders
+
+Project:  Get header information from `.nii` files in several folders with
+one program.  Your program should change to at least one folder different
+from where it started, read at least two `.nii` files, and print the `dim`
+and `descrip` fields from the header.  Optionally, you can find the middle
+slice in each dimension and print them.
