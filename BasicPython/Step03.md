@@ -27,7 +27,7 @@ and here's an example.
 
 ```python
 def my_world():
-    print "My world, and welcome to it."
+    print("My world, and welcome to it.")
 ```
 
 Just the `def` statement, the name of the new function (with parentheses),
@@ -35,7 +35,7 @@ and what it does.  If you do that from the Python prompt, you get
 
 ```python
 >>> def my_world():
-...     print "My world, and welcome to it."
+...     print("My world, and welcome to it.")
 ... 
 >>> my_world()
 My world, and welcome to it.
@@ -45,7 +45,18 @@ You might use something like that to print the name and version of your
 program when it starts, for example, so that's not an entirely useless
 example.  
 
-make a function to go up one directory level
+We can define a variable
+
+We can get fancier with our functions by making them able to read values
+when we use them.  Consider this definition,
+
+```
+def my_something(thing):
+    print("My {} is mine, not yours!").format(thing)
+```
+
+That will be very useful.
+
 glob
 what's a dictionary
   keys :  values
