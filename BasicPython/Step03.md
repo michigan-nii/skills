@@ -49,41 +49,96 @@ We can define a function called, say `up_one()` that simply changes up
 one directory level.  We can only do that because the name for "up one level"
 is always defined and is always the same.
 
-```
+```python
 def up_one():
     parent = '..'
     os.chdir(parent)
 ```
 
-What happens if `os` wasn't imported?  Try it.
+What happens if `os` wasn't imported?  Try it.  I got
 
-This is where a try can come in handy.
-
+```python
+>>> up_one()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 3, in up_one
+NameError: global name 'os' is not defined
 ```
+
+This is where something called `try` can come in handy.  It's often
+referred to as `try...except`, because not only do you tell it what
+to try, you tell it what to do if it takes exception with you.  Notice
+in the above, that the last line says: `NameError: global name 'os' not
+defined`.  The _exception type_ is `NameError`, and the exception
+message is the rest.  When we want Python to try something, we then
+tell it what to do in the case of an exception, and we can do different
+things depending on the type of exception.  
+
+```python
 try:
     os.chdir('..')
 except NameError:
     import os
     os.chdir('..')
+except:
+    print("Something really bad happened, man!")
 ```
     
-I cheated and tried it first.  That reported the following scary
-message.
-
-```
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-NameError: name 'os' is not defined
-```
 We can get fancier with our functions by making them able to read values
 when we use them.  Consider this definition,
 
+```python
+def my_something(gizmo):
+    print("My {} is mine, not yours!").format(gizmo)
 ```
-def my_something(thing):
-    print("My {} is mine, not yours!").format(thing)
+```python
+>>> my_something('heart')
+My heart is mine, not yours!
 ```
 
-That will be very useful.
+Another place where `try...except` is useful is checking to make sure
+that the right kind of value was given to a function.   For example,
+
+```python
+>>> def my_calc(x):
+...      return x / 2.0
+... 
+>>> my_calc(2)
+1.0
+>>> my_calc('a')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 2, in my_calc
+TypeError: unsupported operand type(s) for /: 'str' and 'float'
+```
+
+So, we could make that function less _fragile_ if we put something
+in to test for the type of variable.
+
+```python
+>>> def my_calc(x):
+...     try:
+...         return x/2.0
+...     except TypeError:
+...         print("Give me a number!")
+...         return float('NaN')
+... 
+>>> my_calc('a')
+Give me a number!
+nan
+>>> my_calc(4)
+2.0
+```
+
+That `float('NaN')` should be recognizable to people who have used
+Matlab.  It's Not A Number.  We return it so that, if we were saving
+the result of `my_calc()`, it would cause the right kind of error if
+it were used later.
+
+Being able to give a function something to work on is very useful.
+Boy, howdy, is it!
+
+## Finally we get to an image
 
 Go to
 
@@ -93,24 +148,87 @@ and download `someones_epi.nii.gz`
 
 http://nipy.org/nibabel/_downloads/someones_epi.nii.gz
 
+We will assume that it will go into the `Downloads` folder and
+be loadable from there.
+
 Here is an example of reading an `.nii` file (and some other
-things).  For the moment, let's just go through the first block.
+things).  This presumes you're on a machine that has `nibabel`
+installed.
 
-[  Install `nibabel`  ]
-
+```python
+>>> import nibabel as nib
+>>> epi_img = nib.load('Downloads/someones_epi.nii.gz')
+>>> epi_img_data = epi_img.get_data()
+>>> epi_img_data.shape
+>>> epi_img_header = epi_img.header
+>>> print(epi_img_header)
+<class 'nibabel.nifti1.Nifti1Header'> object, endian='<'
+sizeof_hdr      : 348
+data_type       : 
+db_name         : 
+extents         : 0
+session_error   : 0
+regular         : 
+dim_info        : 0
+dim             : [ 3 53 61 33  1  1  1  1]
+intent_p1       : 0.0
+intent_p2       : 0.0
+intent_p3       : 0.0
+intent_code     : none
+datatype        : uint8
+bitpix          : 8
+slice_start     : 0
+pixdim          : [ 1.  3.  3.  3.  1.  1.  1.  1.]
+vox_offset      : 0.0
+scl_slope       : nan
+scl_inter       : nan
+slice_end       : 0
+slice_code      : unknown
+xyzt_units      : 2
+cal_max         : 0.0
+cal_min         : 0.0
+slice_duration  : 0.0
+toffset         : 0.0
+glmax           : 0
+glmin           : 0
+descrip         : 
+aux_file        : 
+qform_code      : mni
+sform_code      : mni
+quatern_b       : 0.149438127875
+quatern_c       : -0.0
+quatern_d       : -0.0
+qoffset_x       : -78.0
+qoffset_y       : -76.0
+qoffset_z       : -64.0
+srow_x          : [  3.   0.   0. -78.]
+srow_y          : [  0.           2.86600947  -0.88656062 -76.        ]
+srow_z          : [  0.           0.88656062   2.86600947 -64.        ]
+intent_name     : 
+magic           : n+1
 ```
-import nibabel as nib
-epi_img = nib.load('Downloads/someones_epi.nii.gz')
-epi_img_data = epi_img.get_data()
-epi_img_data.shape
-epi_img_header = epi_img.header
-```
 
-For this to work, you must use IPython, not just regular python.
+Is that science?!
+
+So, quit your regular Python, and instead start your IPythons.
+And, in addition, your IPython has to be able to open windows.
 That should Just Work if you are on the Skills machine and using
 VNC.
 
+IPython uses a very different prompt.
+
+```python
+In [1]: 
 ```
+
+IPython is also notorious for being badly behaved if you try to
+copy and paste any indented Python commands into it.  If you want
+to do that, you can use what is called a _magic_ (or maybe _magik_).
+
+First, here is the code that we want to paste.  Copy just to the
+blank line, then paste it.
+
+```python
 import matplotlib.pyplot as plt
 
 def show_slices(slices):
@@ -125,14 +243,31 @@ slice_2 = epi_img_data[:, :, 16]
 show_slices([slice_0, slice_1, slice_2])
 plt.suptitle("Center slices for EPI image")
 ```
+It will either double the size of the indents, or it will go
+totally wacko with the indents.  To be safe, you use 
 
-
-
-Let's look at the header of an image
-
-See http://nipy.org/nibabel/nibabel_images.html
-
+```python
+In [1]: %cpaste
+Pasting code; enter '--' alone on the line to stop or use Ctrl-D.
+:def show_slices(slices):
+:   """ Function to display row of image slices """
+:   fig, axes = plt.subplots(1, len(slices))
+:   for i, slice in enumerate(slices):
+:       axes[i].imshow(slice.T, cmap="gray", origin="lower")
+:--
+In [2]:
 ```
+
+The `%` indicates it is magic.  Trust me, just do this.  Especially
+if the chunk you're pasting has many indents.
+
+
+We saw the full header of an image above, but it's much more likely
+that you will only want some part of the header.  Here is some python
+that will print just the description from the header of an
+image that is included with `nibabel`.
+
+```python
 import os
 import numpy as np
 from nibabel.testing import data_path
@@ -143,6 +278,19 @@ header = img.header
 header['descrip']
 print(header['descrip'])
 ```
+
+Note, that, in the example above, we're using that
+`os.path.join()` function to create a path that will work whether
+we're on Linux, Mac, or Windows.  We're also renaming the libraries
+as we import them (or functions from them).  All of the muck at the
+top is so we can do `img = nib.load(example_file)`, which is how
+you read an image into Python.  The image has two parts, a header,
+which we've seen, and data.  We extract the header from the `img` and
+put it into its own variable.
+
+See http://nipy.org/nibabel/nibabel_images.html
+
+
 
 what's a dictionary
   keys :  values
