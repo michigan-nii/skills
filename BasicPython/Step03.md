@@ -292,11 +292,86 @@ See http://nipy.org/nibabel/nibabel_images.html
 
 
 
-what's a dictionary
-  keys :  values
+## Python dictionaries
+
+We've seen that lists in Python can be used to collect multiple items into
+one place and then use them, one after another.  An individual item can
+only be referred to in a list by its position, commonly called its _index_.
+
+Sometimes that's not such a hot idea.  One example where something else is
+desirable is when the number of items is different depending on circumstances,
+so the number of items changes, leaving gaps.  In one list, it might be
+that the fourth item is the same as the sixth item in another list.  Python
+uses _dicitionaries_ as the way to give each element a name -- the _key_ --
+and that is used to access the _value_ associated with it.  They are sometimes
+called _associative arrays_, and smattering your conversation with references
+to _key-value pairs_ shows you're cool.
+
+Just above, we saw how to get the values of items in a dictionary; like this
+
+```python
+print(header['descrip'])
+```
+
+In this case, the dictionary component is hidden behind something else, a
+NiPy image object, but that's what it is.  In the case above, `header` would
+be the name of the dictionary variable, and `descrip` is the name of the
+entry.  These are very much like database fields.  OK, that's how we get
+stuff out of one, how do we get stuff into one?  First, we need to tell
+Python that we want a dictionary.
+
+```python
+header = {}
+```
+or
+```python
+header = dict()
+```
+
+Once it is created, you add things to it by specifying the key (name) in the
+same way you would specify an index to a list -- in square brackets.  Suppose
+we have the following information about a how images for a study were acquired.
+
+> We obtained 146 contiguous echo planar imaging (EPI) whole-brain functional
+volumes (TR=2000 ms; TE=30 ms; flip angle=80, 40 slices, matrix=64x64;
+FOV=192 mm; acquisition voxel size=3x3x4mm) during each of the two flanker
+task blocks.
+
+> A high-resolution T1-weighted anatomical image was also acquired using a
+magnetization prepared gradient echo sequence (MPRAGE, TR=2500 ms;
+TE= 3.93 ms; TI=900 ms; flip angle=8; 176 slices, FOV=256 mm).
+
+Now we want to put some of that into a dictionary so we can refer to it.
+
+```python
+>>> EPI_info = dict()
+>>> EPI_info['TR'] = 2000
+>>> EPI_info['TE'] = 30
+
+>>> print(EPI_info['TE'])
+30
+>>> type(EPI_info['TE'])
+int
+```
+
+That's all very well and good, so long as you have a record of what the
+keys are somewhere, right?  You can get the keys present in a list with
+
+```python
+for key in EPI_info:
+    print(key)
+TE
+TR
+```
+
+Note, though that the keys are not sorted, nor are they guaranteed to be
+in any particular order.  If you want the keys to be sorted, you must
+refer to them with `sorted(EPI_info.keys())`.
+
+OK, your turn.  Write a little program that will created the `EPI_info`
+dictionary above and print a list of the sorted keys and their values.
 
 Project:  Get header information from `.nii` files in several folders with
 one program.  Your program should change to at least one folder different
 from where it started, read at least two `.nii` files, and print the `dim`
-and `descrip` fields from the header.  Optionally, you can find the middle
-slice in each dimension and print them.
+and `descrip` fields from the header.
