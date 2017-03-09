@@ -131,3 +131,80 @@ cd AA001
 eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
 ```
 
+To make it a program we can just run, we set permissions with `chmod`.
+
+```bash
+$ ls -l do_eddy_correct.sh
+-rw-r--r-- 1 grundoon users   0 Mar  8 23:19 do_eddy_correct.sh
+
+$ chmod a+x do_eddy_correct.sh
+$ ls -l do_eddy_correct.sh
+-rwxr-xr-x 1 grundoon users   0 Mar  8 23:19 do_eddy_correct.sh
+```
+
+where the `x`s indicate _executable_.  We can now run it with
+
+```bash
+$ ./do_eddy_correct.sh
+```
+
+Finally, we should probably put comments into the file so that the person
+we will be three months from now can be reminded what today's self was doing.
+
+```bash
+#!/bin/bash
+
+# Save the data folder name in a variable for convenience
+DATA_DIR='/path/to/the/network/folder'
+
+# Create a temporary folder and save the name
+MY_TMP=$(mktemp -d)
+
+cd $MY_TMP
+
+# Copy the subject folder and all its files (-r:  recursive copy)
+cp -r $DATA_DIR/AA001 ./
+
+cd AA001
+
+# Run the program
+eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
+
+# Copy the output back to the data folder
+cp NNN.edited_eddy.* $DAT_DIR/AA001/
+
+```
+
+So, we're almost done with the first pass at this.  Now all we need to do
+is remove the data we copied, which makes it look finally like this.
+
+```bash
+#!/bin/bash
+
+# Save the data folder name in a variable for convenience
+DATA_DIR='/path/to/the/network/folder'
+
+# Create a temporary folder and save the name
+MY_TMP=$(mktemp -d)
+
+cd $MY_TMP
+
+# Copy the subject folder and all its files (-r:  recursive copy)
+cp -r $DATA_DIR/AA001 ./
+
+cd AA001
+
+# Run the program
+eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
+
+# Copy the output back to the data folder
+cp NNN.edited_eddy.* $DAT_DIR/AA001/
+
+# Go back to our home directory
+cd
+
+# Delete the temporary folder and everything in it
+
+rm -r $MY_TMP
+```
+
