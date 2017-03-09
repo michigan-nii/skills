@@ -20,7 +20,7 @@ So, we have subjects, called `AA001`, `AA002`,. . . , `AANNN`, where `NNN` is
 some number in the hundreds.  For each subject, we want to run the FSL program
 `eddy_correct` like so:
 
-```
+```bash
 $ eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
 ```
 
@@ -54,7 +54,7 @@ Looking at what surrounds that command, we must take the first couple of steps
 in order.  We can't copy data to a nonexistent folder.  So, first pass looks
 like
 
-```
+```bash
 cd /tmp
 mkdir work
 cd work
@@ -76,7 +76,7 @@ to save that in a variable for later use.  You can make the output of a command
 available for saving in a variable by putting it inside `$(...)`.  So,
 that would result in this chunk.
 
-```
+```bash
 MY_TMP=$(mktemp -d)
 cd $MY_TMP
 # copy the data
@@ -88,7 +88,7 @@ that it will create two files:  the one named on the command line,
 `NNN.edited_eddy.nii` and `NNN.edited_eddy.ecclog`.  We can use our nice
 wildcards to help with the copying of output, as in
 
-```
+```bash
 NNN.edited_eddy.*
 ```
 
@@ -97,7 +97,7 @@ data and to where am I copying the output?  We have the data on a network
 drive, and all the subjects will be under one folder, so this is good
 place to use a variable because we have an unchanging part of a name.
 
-```
+```bash
 DATA_DIR='/path/to/the/network/folder'
 ```
 
@@ -105,7 +105,7 @@ and we would refer to that as `$DATA_DIR` now.  That's also less to type if
 the path is long, so reducing the chance of random typos.  Each subject will
 have a folder under that, so something like
 
-```
+```bash
 DATA_DIR='/path/to/the/network/folder'
 MY_TMP=$(mktemp -d)
 cd $MY_TMP
