@@ -204,7 +204,12 @@ cp NNN.edited_eddy.* $DAT_DIR/AA001/
 cd
 
 # Delete the temporary folder and everything in it
-
 rm -r $MY_TMP
 ```
 
+All right!
+
+## Processing multiple subjects
+
+So, now we need to convert that to run over, say, 10 subjects, or up to
+10 subjects.
