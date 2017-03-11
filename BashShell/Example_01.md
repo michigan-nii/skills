@@ -1,4 +1,4 @@
-# Example of using a shell script for a pipeline
+# Example of using a shell script for a repetitive task
 
 This example will go over in a fair amount of detail how one Bash script to
 complete one step in processing over many subjects was created.  This is an
