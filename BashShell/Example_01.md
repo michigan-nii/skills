@@ -332,8 +332,6 @@ cd
 rm -r $MY_TMP
 ```
 
-All right!
-
 If we are going to use this to process a bunch of different subjects, we
 don't want to have to edit the file and change the subject name each time
 -- we might as well just run the command.  To do this, we need to be able
@@ -412,19 +410,142 @@ fi
 subject=$1
 ```
 
-and it should all be good to go.
+and it should all be good to go as
+
+```bash
+$ do_eddy_correct.sh AA001
+```
 
 ## Processing multiple subjects
 
-So, now we need to convert that to run over, say, 10 subjects, or up to
-10 subjects.  To do this, we will have to find a way to swap out the
-subject names in a `for` loop.  That is for 1, 2,..., 10 (or maybe 0, 1,...,
-9 is better), repeat the same process for each subject.
+Because we made `do_eddy_correct.sh` take an argument, all we have to do
+is find a way to run it a bunch of times, each time with a new subject.
+To do this, we will use a `for` loop, thusly.
 
-Take a look up above.  The subject is `AA001`, so if we could contrive a
-variable that changed from `AA001`, `AA002`, etc, then it will work.  Start
-by just changing the typed-out name to a variable, and set the value at the
-beginning.
+```bash
+#!/bin/bash
 
+for sub in AA001 AA002 AA003 ; do
+    echo "running $sub"
+done
+```
 
+Here, again, I'm creating a 'fake' script to make sure I get the `for` part
+right before I go and try to run a program that might spit many nasty errors
+at me.  You can create a file and put these lines in it, then change its
+permissions to make it runnable, then run it.
 
+Or, you should be able to just copy and paste the three lines of the loop
+into a terminal and see it work.  
+
+```bash
+$ for sub in AA001 AA002 AA003 ; do
+>     echo "running $sub"
+> done
+running AA001
+running AA002
+running AA003
+```
+
+So, to run the `do_eddy_correct.sh` script, we change that the file to contain
+
+```bash
+#!/bin/bash
+
+for sub in AA001 AA002 AA003 ; do
+    ./do_eddy_correct.sh $sub
+done
+```
+
+and it's done.
+
+Well, if you have only those three subjects.  Suppose you have
+
+```bash
+$ ls 
+AA001  AA003  AA005  AA007  AA010  AA012  AA014  AA017  AA019
+AA002  AA004  AA006  AA008  AA011  AA013  AA016  AA018  AA020
+```
+
+We can use a cute trick here.  Suppose I have those in a folder called
+`data`.  I can generate that list by using this.
+
+```bash
+$ ls data
+AA001  AA003  AA005  AA007  AA010  AA012  AA014  AA017  AA019
+AA002  AA004  AA006  AA008  AA011  AA013  AA016  AA018  AA020
+```
+
+*and* I can even do this (watch, now; nothing up my sleeve)
+
+```bash
+for sub in $(ls data) ; do
+   echo Subject is $sub
+done
+```
+
+It's always good to think a bit ahead.  Suppose I had, instead
+
+```bash
+$ ls data
+00READ_ME_FOR_INFORMATION  AA003  AA006  AA010  AA013  AA017  AA020
+AA001                      AA004  AA007  AA011  AA014  AA018
+AA002                      AA005  AA008  AA012  AA016  AA019
+```
+
+Then that command would give me
+
+```bash
+$ for sub in $(ls data) ; do
+>     echo Subject is $sub
+> done
+Subject is 00READ_ME_FOR_INFORMATION
+Subject is AA001
+. . . .
+```
+
+and that would be bad.  But, things get complicated as we try to work around
+that.  If I try `data/AA*` to get just what begins with `AA`, then I get
+
+```bash
+$ ls data/AA*
+data/AA001:
+001.nii
+
+data/AA002:
+002.nii
+. . . .
+```
+
+I can use the `-d` and get partway there,
+
+```bash
+$ ls -d data/AA*
+data/AA001  data/AA004  data/AA007  data/AA011  data/AA014  data/AA018
+. . . .
+```
+
+What I really want is go into `data`, then do `ls -d AA*`.
+
+Another digression:  When we put something inside `()`, we are running it
+in a _subshell_, which is another copy of bash that runs the stuff in the
+`()` then quits.  We can separate commands inside the `()` with a semicolon.
+
+```bash
+$ (cd data ; ls -d AA*)
+AA001  AA003  AA005  AA007  AA010  AA012  AA014  AA017  AA019
+AA002  AA004  AA006  AA008  AA011  AA013  AA016  AA018  AA020
+```
+
+and to use all those names, we make it
+
+```bash
+for sub in $(cd data ; ls -d AA*) ; do
+    ./do_eddy_correct.sh $sub
+done
+```
+
+That's a lot of stuff all to get just one thing done..., well, actually,
+if we had a couple hundred subjects, we've done one thing but a couple
+of hundred times.  As you learn more of these commands, writing scripts like
+these will get easier, and take less time, and it will All Be Worth It.
