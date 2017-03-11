@@ -171,7 +171,7 @@ cd AA001
 eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
 
 # Copy the output back to the data folder
-cp NNN.edited_eddy.* $DAT_DIR/AA001/
+cp NNN.edited_eddy.* $DATA_DIR/AA001/
 
 ```
 
@@ -198,7 +198,132 @@ cd AA001
 eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
 
 # Copy the output back to the data folder
-cp NNN.edited_eddy.* $DAT_DIR/AA001/
+cp NNN.edited_eddy.* $DATA_DIR/AA001/
+
+# Go back to our home directory
+cd
+
+# Delete the temporary folder and everything in it
+rm -r $MY_TMP
+```
+
+Whoops.  I ran that, and it didn't work because the data file isn't really
+calle `NNN.edited.nii`.  Looking in the subject folder reveals that it's
+called `001.edited.nii`.  That's a lot like, but not exactly, the same as
+the folder name.  There's a handy little program that can help us here: `tr`.
+To learn more about `tr`, read the man page (something you'll hear a lot if
+you hang out with Linux nerds).  Here's the first bit of the man page....
+
+```bash
+$ man tr
+
+TR(1)                            User Commands                           TR(1)
+
+NAME
+       tr - translate or delete characters
+
+SYNOPSIS
+       tr [OPTION]... SET1 [SET2]
+
+DESCRIPTION
+       Translate, squeeze, and/or delete characters from standard input, writ‐
+       ing to standard output.
+
+       -c, -C, --complement
+              use the complement of SET1
+
+       -d, --delete
+              delete characters in SET1, do not translate
+
+       -s, --squeeze-repeats
+              replace each sequence of a repeated character that is listed  in
+              the last specified SET, with a single occurrence of that charac‐
+              ter
+```
+
+If you've not read one of these, the synopsis tries to tell you how to use it.
+Options are the the things that start with a `-`, like `-d`.  Later on the page
+it will tell you what `SETS` are.  For a program like this, I like to use
+`echo` to test what it does.  For example,
+
+```bash
+$ echo "tthe stuff is good" | tr -s 't'
+the stuff is good
+$ echo "tthe stuff is good" | tr -s 'tf'
+the stuf is good
+$ echo "tthe stuff is good" | tr -d 't'
+he suff is good
+$ echo "tthe stuff is good" | tr -c 't' 'a'
+ttaaaataaaaaaaaaaaa$
+```
+
+That last one is a little tricky.  It changed _everything but_ 't' into 'a',
+including the end of line character, which is why the `$` prompt is on the
+same line as the `tr` output.  Why this digression?
+
+We can use `echo $subject | tr -d 'A'` to get `001` from `AA001`.  And we can
+use that in the filename, like so.
+
+```bash
+id_num=$(echo 'AA001' | tr -d 'A')
+. . . .
+eddy_correct ${id_num}.edited.nii ${id_num}.edited_eddy.nii 0
+```
+
+The first of those lines takes the output of the commands inside the `$()`
+and puts in into a variable called `id_num`.  When we want to use the
+variable's value, we add the `$` prefix.  Bash (shell) variables can contain
+letters (upper and lower), numbers, and underscores in their names.  We use
+the `{}` around the variable name whenever there might be some question
+about whether what follows it could be part of the name.  In this case,
+we're cool, but what if we copy this file to use for something else, and
+the file name is `001_edited.nii`?
+
+```$bash
+$ id_num='001'
+$ echo The file is called $id_num_edited.nii
+The file is called .nii
+
+$ echo The file is called ${id_num}_edited.nii
+The file is called 001_edited.nii
+```
+
+See what happened?  Bash interpreted everything from the `$` to the first
+character that isn't allowed in a variable name as the name, that is
+`id_num_edited`, which doesn't exist, so it doesn't have a value, and the
+command echoed everything else.
+
+Since we're using variables, let's also put the subject folder in a variable
+so we can change it in one place instead of maybe forgetting one later.  That
+gives us
+
+```bash
+#!/bin/bash
+
+# Set the name of the subject folder
+subject='AA001'
+
+# Create the ID number from it
+id_num=$(echo $subject | tr -d 'A')
+
+# Save the data folder name in a variable for convenience
+DATA_DIR='/path/to/the/network/folder'
+
+# Create a temporary folder and save the name
+MY_TMP=$(mktemp -d)
+
+cd $MY_TMP
+
+# Copy the subject folder and all its files (-r:  recursive copy)
+cp -r $DATA_DIR/$subject ./
+
+cd $subject
+
+# Run the program
+eddy_correct ${id_num}.edited.nii ${id_num}.edited_eddy.nii 0
+
+# Copy the output back to the data folder
+cp ${id_num}.edited_eddy.* $DATA_DIR/$subject/
 
 # Go back to our home directory
 cd
@@ -209,7 +334,97 @@ rm -r $MY_TMP
 
 All right!
 
+If we are going to use this to process a bunch of different subjects, we
+don't want to have to edit the file and change the subject name each time
+-- we might as well just run the command.  To do this, we need to be able
+to supply an _argument_ to the shell script that is the name of the subject
+folder.  Then we could run it with something like
+
+```bash
+$ do_eddy_correct.sh AA0001
+```
+
+There are some variables that are automatically set when you run a shell
+script (or other command), and those are the variables that correspond to
+the _positional arguments_.  In the command above, there are two of these.
+The first refers to the name of the program, i.e., `do_eddy_correct.sh`, and
+it is called `$0`.  This exists even for your login shell.
+
+```bash
+$ echo $0
+-bash
+```
+
+All the rest are `$1`, `$2`, etc.  There are lots of good things that can be
+done using these, but here, we only care about `$1`.  We want to set `$subject`
+to be whatever we provide as `$1`, in this case `AA001`.  Here's the short,
+unsafe way to do that.
+
+```bash
+subject=$1
+```
+
+Why unsafe?  Well, we saw what happens when a variable doesn't exist, so we
+want to make sure that _something_ is in `$1`.  It will be safer to use
+
+```bash
+if [ -z $1 ] ; then
+    echo "No subject folder name given.  Bye, bye."
+    exit 1
+fi
+subject=$1
+echo "Subject is $subject"
+```
+
+So the `-z` thing means "is the following thing empty?", so that `if` will be
+true if we don't include a folder name.  If we don't, then `do_eddy_correct.sh`
+will print a message and exit and indicate it did so because of an error
+(that's what the 1 means).  If there is a folder name -- no guarantee it's a
+valid folder, but it's something -- then the `if` doesn't do anything, and the
+subject gets set and printed.
+
+Put just those into a file called `test.sh`, and try it.
+
+```bash
+$ bash test.sh
+No subject folder name given.  Bye, bye.
+$ bash test.sh AA001
+Subject is AA001
+```
+
+So, replace these lines
+
+```bash
+```bash
+#!/bin/bash
+
+# Set the name of the subject folder
+subject='AA001'
+```
+
+from your saved `do_eddy_correct.sh` with these lines
+
+```bash
+if [ -z $1 ] ; then
+    echo "No subject folder name given.  Bye, bye."
+    exit 1
+fi
+subject=$1
+```
+
+and it should all be good to go.
+
 ## Processing multiple subjects
 
 So, now we need to convert that to run over, say, 10 subjects, or up to
-10 subjects.
+10 subjects.  To do this, we will have to find a way to swap out the
+subject names in a `for` loop.  That is for 1, 2,..., 10 (or maybe 0, 1,...,
+9 is better), repeat the same process for each subject.
+
+Take a look up above.  The subject is `AA001`, so if we could contrive a
+variable that changed from `AA001`, `AA002`, etc, then it will work.  Start
+by just changing the typed-out name to a variable, and set the value at the
+beginning.
+
+
+
