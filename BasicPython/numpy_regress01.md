@@ -3,7 +3,7 @@
 As you know, the regression model can be written and implemented
 using matrices.  The basic form of the model is
 
-_*Y*_ = _*X*&beta;_ + _&epsilon;_
+***Y*** = ***X&beta;*** + ***&epsilon;***
 
 That's all well and good, but it's not terribly helpful if
 you want to compute those things, yet.  Typically, you would
