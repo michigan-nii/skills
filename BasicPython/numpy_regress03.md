@@ -34,6 +34,7 @@ array([[ 33.],
        [ 53.],
        [ 61.],
        [ 62.]])
+>>> X = data[:,0]
 >>> ones = np.ones(data.shape[0])
 >>> ones
 array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.])
@@ -41,7 +42,6 @@ array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.])
 >>> X
 array([[ 1. ,  1. ,  1. ,  1. ,  1. ,  1. ,  1. ],
        [ 4. ,  4.5,  5. ,  5.5,  6. ,  6.5,  7. ]])
->>> Y = data[:,1]
 ```
 
 I could stop with X here, but then I would have to transpose all the
@@ -70,7 +70,7 @@ but do you really want to have to unpack that in a few months?
 Maybe it's better to use some intermediary vegetables,
 
 ```python
->>> X_prime_X_inv = np.linalg(np.dot(X.T, X))
+>>> X_prime_X_inv = np.linalg.inv(np.dot(X.T, X))
 >>> b = np.dot(
 ...     np.dot(X_prime_X_inv, X.T),
 ...     Y
@@ -131,4 +131,43 @@ array([[ True],
        [ True],
        [ True],
        [ True]], dtype=bool)
+```
+
+And, finally, let's print a table of coefficients.
+
+```python
+>>> print("b0:  %.6f\nb1:   %.6f" % (float(b[0]), float(b[1])))
+b0:  -2.678571
+b1:   9.500000
+```
+
+Finally, here's a gussied up version in a file ready to run.
+
+```python
+import numpy as np
+data = np.loadtxt('data.csv', delimiter=',', skiprows=1)
+Y = data[:,1]
+Y = Y[:, np.newaxis]
+X = data[:,0]
+ones = np.ones(data.shape[0])
+X = np.array([ones, X]).T
+X_prime_X_inv = np.linalg.inv(np.dot(X.T, X))
+b = np.dot(
+       np.dot(X_prime_X_inv, X.T),
+       Y
+    )
+Y_hat = np.dot(X, b)
+resid = Y - Y_hat
+print("\nRegression coefficients")
+print("----------------")
+print("b0:  %.6f\nb1:   %.6f" % (float(b[0]), float(b[1])))
+print("----------------")
+print("\nPredicted values")
+print("----------------")
+print(Y_hat)
+print("----------------")
+print("\nResiduals")
+print("----------------")
+print(resid)
+print("----------------")
 ```
