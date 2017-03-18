@@ -10,7 +10,7 @@ you want to compute those things, yet.  Typically, you would
 get the _*Y*_ and the _*X*_ in a file, then you would compute
 the _&beta;_ and the _&epsilon;_.
 
-For example, you might get a file, let's call it `data.cxv` that
+For example, you might get a file, let's call it `data.csv` that
 is structured like this
 
 ```
