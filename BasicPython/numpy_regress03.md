@@ -60,7 +60,7 @@ array([[ 1. ,  4. ],
        [ 1. ,  7. ]])
 ```
 
-I could code (X'X)<sup>-1</sup> directly with
+I could code the whole equation directly with
 
 ```python
 >>> np.dot(np.dot(np.linalg.inv(np.dot(X.T, X)), X.T), Y)
@@ -133,7 +133,7 @@ array([[ True],
        [ True]], dtype=bool)
 ```
 
-And, finally, let's print a table of coefficients.
+Let's print a table of coefficients.
 
 ```python
 >>> print("b0:  %.6f\nb1:   %.6f" % (float(b[0]), float(b[1])))
@@ -171,3 +171,47 @@ print("----------------")
 print(resid)
 print("----------------")
 ```
+
+OK, got it?  Good.  OK, you get to try this yourself.
+
+Remember from your previous looks a regression output, there is
+a table of sums of squares.  Typically, you'll see a total sums
+of squares, sums of squares for regression, and sums of squares
+for error.
+
+If J is a square matrix all ones, that can be created by using
+
+```python
+>>> n = 3
+>>> J = np.ones([n,n])
+>>> J
+array([[ 1.,  1.,  1.],
+       [ 1.,  1.,  1.],
+       [ 1.,  1.,  1.]])
+```
+
+the total sum of squares is shown in matrix notation as
+
+Y'Y - 1/n * Y'JY
+
+the sums of squares for regression (ssr) is given by
+
+b'X'Y - 1/yY'JY
+
+and the error sums of squares (sse) is given by
+
+(Y - XB)'(Y - XB)
+
+Our _n_ is `data.shape[0]`, and we are estimating only one parameter,
+so the degrees of freedom for the residuals is `n - 2`.  An ANOVA
+table for the regression would look like this.
+
+```
+Response: Y
+             Df      Sum Sq  Mean Sq    F value
+X             1      ssr     ssr/df     msr/mse
+Residuals     n-2    sse     sse/df
+```
+
+and you should calculate the values for each of those.
+
