@@ -1,3 +1,11 @@
+As you know, the regression model can be written and implemented
+using matrices.  The basic form of the model is
+
+***Y*** = ***X&beta;*** + ***&epsilon;***
+
+This example will show matrix functions that will let you take
+that and convert to NumPy code.  I hope.
+
 # Some useful NumPy functions
 
 ```
@@ -20,6 +28,27 @@ array([[1],
        [2],
        [3]])
 ```
+
+Data comes in files, typically, like this one, called `data.csv`.
+
+```
+x,y
+4.0,33
+4.5,42
+5.0,45
+5.5,51
+6.0,53
+6.5,61
+7.0,62
+```
+
+To read a `.csv` file,
+
+```python
+data = np.loadtxt('data.csv', delimiter=',', skiprows='1')
+```
+
+(I put an error in that.  What is it?)
 
 Our data came in as a column of X values followed by a
 column of Y values.  So, we need to be able to separate
