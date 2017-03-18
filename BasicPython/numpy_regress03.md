@@ -208,7 +208,7 @@ table for the regression would look like this.
 
 ```
 Response: Y
-             Df      Sum Sq  Mean Sq    F value
+              Df     Sum Sq  Mean Sq    F value
 X             1      ssr     ssr/df     msr/mse
 Residuals     n-2    sse     sse/df
 ```
