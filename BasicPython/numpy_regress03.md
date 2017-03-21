@@ -215,4 +215,5 @@ so we can call it with `my.regress(Y, X)`.
 The two files are now
 
 The script that reads data and runs `regress()` [my_project.py](my_project.py)
+
 The file that contains the `regress()` function [my.py](my.py)
