@@ -152,17 +152,66 @@ import my_regress
 Now I run it, and I get
 
 ```python
-----> 8 my_regress(Y, X)
-      9 
+Traceback (most recent call last):
+  File "my_project.py", line 8, in <module>
+    my_regress(Y, X)
 TypeError: 'module' object is not callable
 ```
 
+Progress?  Yes, we got one error to go away.  'Module object is
+not callable'?  Module?  Oh, right.  We use `import` to load
+modules, so this is saying that `my_regress` is the name of the
+module, not the name of the function.  We have another module
+loaded, `numpy`, and we assigned it to an alias, `np`.  So, let's
+try a wild and crazy experiment and try
 
-/home/bennet/BasicPython/my_regress.py in my_regress(Y, X)
-      2 def my_regress(Y, X):
-      3     Y = Y[:, np.newaxis]
-----> 4     ones = np.ones(data.shape[0])
-      5     X = np.array([ones, X]).T
-      6     X_prime_X_inv = np.linalg.inv(np.dot(X.T, X))
+```python
+import my_regress as my
+```
 
+and then change `my_project.py` to say
+
+```python
+my.my_regress(Y, X)
+```
+More progress!  Now I get,
+
+```python
+  File "my_project.py", line 8, in <module>
+    my.my_regress(Y, X)
+  File "my_regress.py", line 4, in my_regress
+    Y = Y[:, np.newaxis]
+NameError: global name 'np' is not defined
+```
+
+What the...?!  I have an `import numpy` in....  Oh.  In `my_project.py`.
+I guess the import there isn't visible to `my_regress.py`.  Let's add an
+`import numpy` there, too.
+
+Now I get,
+
+```python
+[bennet@perspicacity:BasicPython]$ python my_project.py 
+Traceback (most recent call last):
+  File "my_project.py", line 8, in <module>
+    my.my_regress(Y, X)
+  File "my_regress.py", line 5, in my_regress
+    ones = np.ones(data.shape[0])
 NameError: global name 'data' is not defined
+```
+
+Oh, right, I am using the original `data` matrix to set the size
+of the ones.  I should be using something _local_ to `my_regress`,
+so let's change it to
+
+```python
+ones = np.ones(X.shape[0])
+```
+I'm using `X` because that's what I'm going to join it to.
+
+And..., Joy!  That seems to have made it work.  There is one
+more suggestion that occurred to me late, and that is, since
+we have to use the module name to use the function, let's change
+the function to `regress()` and rename the module file to `my.py`,
+so we can call it with `my.regress(Y, X)`.
+
