@@ -1,6 +1,3 @@
-# Draft only.  Read no further!  :-)
-
-
 # Making functions and pipelineable programs
 
 We have a fine and wonderful program now that will regress one variable
