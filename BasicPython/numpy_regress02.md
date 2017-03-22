@@ -225,7 +225,7 @@ Y'Y - 1/n * Y'JY
 ```
 
 Y, in this case is 7 rows by 1 column, so Y' will be 1 row by 7 columns,
-so 1 x 7 times 7 x 1 will yield... 1 x 1, a scalar (number).  That means
-that Y' is 1 x 7, and J is 7 x 7, so their product will be 1 x 7, so that
+so 1 x 7 times 7 x 1 will yield... 1 x 1, a scalar (number).  Y' is 1 x 7,
+and J is 7 x 7, so their product will be 1 x 7, so that
 will end up the same dimension as Y'Y, i.e., another scalar.  That can be
 a quick check if you get errors because of incorrect dimensions.
