@@ -148,3 +148,31 @@ if __name__ == "__main__":
     Y = [ 33.,  42.,  45.,  51.,  53.,  61.,  62.]
     regress(Y, Xgood)
 ```
+
+That prints all the output, even though we're testing.  We can quiten things
+by putting all the print inside and if.
+
+```python
+. . . .
+    if __name__ != '__main__':
+        print("\nRegression coefficients")
+        . . . .  [ the rest of the printing here ]
+    else:
+        print "Succeeded"
+```
+
+If that gets added, too, then we get this.
+
+```bash
+$ python my.py
+I should run some tests here, shouldn't I?
+
+Trying with good data
+Succeeded
+
+Trying with bad X
+X is not a NumPy array, perhaps?
+
+Trying with bad Y
+Y is not a NumPy array, perhaps?
+```
