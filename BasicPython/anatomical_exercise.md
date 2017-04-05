@@ -95,4 +95,4 @@ for i in range(len(I)):
     # By putting in the plt.close(), we reset the image window so that
     # the next image will appear.
     plt.close()
-    ```
+```
