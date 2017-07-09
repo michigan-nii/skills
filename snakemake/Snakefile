@@ -1,0 +1,65 @@
+rule help:
+    message:
+        """
+
+The available rules for this Snakefile are:
+       bet               Skull strip
+       mcflirt           Motion correction for resting state
+       mean_func         Create one-volume mean activity image
+       register_motion   Register motion-corrected functional data
+                         to anatomical scan
+       all               Run all of the above
+
+        """
+
+rule bet:
+    """Run bet on T1 image"""
+    output:
+        'T1_skstrip.nii.gz'
+    input:
+        'T1.nii.gz'
+    shell:
+        "bet {input} {output} -B"
+
+rule mcflirt:
+    """Run mcflirt on skull stripped image"""
+    output:
+        'rest_mc.nii.gz'
+    input:
+        'rest.nii.gz'
+    shell:
+        "mcflirt -in {input} -out rest_mc -plots -rmsrel -rmsabs"
+
+rule mean_func:
+    """
+    Create mean_func file, which is a 1-volume mean activity image used
+    for registration
+    """
+    output:
+        'rest_mean_func.nii.gz'
+    input:
+        'rest_mc.nii.gz'
+    shell:
+        "fslmaths rest_mc -Tmean rest_mean_func"
+
+rule flirt:
+    """Register motion-corrected functional data to anatomical scan"""
+    output:
+        'xfm_dir/rest_to_T1.nii.gz'
+    input:
+        'rest_mean_func.nii.gz', 'T1_skstrip.nii.gz'
+    shell:
+        """
+        mkdir -p xfm_dir
+        flirt -in {input[0]} -ref {input[1]} -out {output} -omat xfm_dir/rest_to_T1.mat -dof 12
+        """
+
+rule all:
+    """Run it all"""
+    input:
+        rules.flirt.output
+
+rule clean:
+    """Remove all files and folders created by this Snakefile"""
+    shell:
+        "rm -rf xfm_dir T1_skstrip* rest_mc* rest_mean*"
