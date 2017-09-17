@@ -58,7 +58,8 @@ like
 cd /tmp
 mkdir work
 cd work
-# copy the data
+# We will need to copy the data here before we can run this
+
 eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
 ```
 
@@ -79,7 +80,8 @@ that would result in this chunk.
 ```bash
 MY_TMP=$(mktemp -d)
 cd $MY_TMP
-# copy the data
+# We will need to copy the data here before we can run this
+
 eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
 ```
 
@@ -109,6 +111,7 @@ have a folder under that, so something like
 DATA_DIR='/path/to/the/network/folder'
 MY_TMP=$(mktemp -d)
 cd $MY_TMP
+# Copy the data
 cp -r $DATA_DIR/AA001 ./
 cd AA001
 eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
@@ -126,6 +129,7 @@ $ cat do_eddy_correct.sh
 DATA_DIR='/path/to/the/network/folder'
 MY_TMP=$(mktemp -d)
 cd $MY_TMP
+# Copy the data
 cp -r $DATA_DIR/AA001 ./
 cd AA001
 eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
@@ -172,7 +176,6 @@ eddy_correct NNN.edited.nii NNN.edited_eddy.nii 0
 
 # Copy the output back to the data folder
 cp NNN.edited_eddy.* $DATA_DIR/AA001/
-
 ```
 
 So, we're almost done with the first pass at this.  Now all we need to do
