@@ -32,4 +32,49 @@ work.
 
 ## Aside:  The filesystem is a database
 
-The filesystem is a database.
+The filesystem is a database.  It contains files, folders, and information
+about those files and folders.  You can ask the filesystem for details about
+files or for the contents of files.
+
+In Linux, _everything_ is a file.  Folders are just a special type of file that
+contain the locations of, and information about, other files.  To Linux, even
+your terminal window is a file (two files, at once, actually).
+
+# Creating and removing directories
+
+You create directories with `mkdir` followed by the names of one or more
+directories.  The first example below creates a folder called `working`
+and the second one called `openfmri` and one called `src`.
+```
+$ mkdir working
+$ mkdir openfmri src
+```
+If we decide we don't need `src` after all, we remove it (provided it's
+empty) with
+```
+$ rmdir src
+```
+You change into the `working` directory, create another one called
+`sub001`, and then change to that with
+```
+$ cd working
+$ mkdir sub001
+$ cd sub001
+```
+To make sure you know where you are, you can use `pwd`.  There is a
+special directory name, `..` (yup, two dots, pronounced dot-dot), which
+means "one directory above where I am".  So, you should be in the
+`sub001` folder.  What's one above that?
+```
+$ cd ..
+$ pwd
+```
+Change back to `sub001`, then try this trick.
+```
+$ cd sub001
+$ cd ../..
+$ pwd
+```
+Just `cd` with no name will take you back to your home directory, also
+called `~` (tilde, or twiddle).  Do that.
+
