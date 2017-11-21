@@ -28,6 +28,8 @@ two questions.
 1.  What might be analogous to printing variable definitions and summaries for
     a 'regular' dataset?
 
+## Shell based
+
 Since I eventually want to be able to _easily_ run this over a whole set of
 images, I want something that I can run from the command line in a loop.  That
 leads me to a non-SPM tool, since SPM locks you into the Matlab framework
@@ -192,4 +194,163 @@ also try it.
 
 So, instead, let's turn now to Python.
 
+## Python based
 
+The main Python library for manipulating the data in NIfTI images is Nibabel.
+Scripts that will use Nibabel need to import it, and since NumPy is used to
+manipulate the data in images, it's usually wise to import it also.  As we
+saw above, the information we need is in the NIfTI header, so let's start
+there.  Let's also start by kind of replicating what we have already done.
+
+```
+#!/usr/bin/env python
+
+from os.path import join as path_join
+import numpy as np
+import nibabel as nib
+
+# Set path to subjects and image file
+subjects = '/home/bennet/openfmri/MC2/subjects'
+image_file = path_join(subjects, 'sub-01/anat/T1w.nii')
+
+# Load the image and extract the header
+image = nib.load(image_file)
+header = image.header
+
+# Get the affine transform matrices
+sform = header.get_sform()
+qform = header.get_qform()
+
+# Are the affines all the same or different?
+sform_eq_qform = sform.all() == qform.all()
+if sform_eq_qform == True:
+    print("All affines are equal")
+    print("Affine matrix")
+    print(sform)
+else:
+    print("Affines are unequal")
+    print("sform affine\n{}".format(sform))
+    print("qform affine\n{}".format(qform))
+```
+
+We can get the affine matrix, and we can compare that with what we got
+before, namely, the _x_-axis has origin at 0, which is almost certainly
+Not Right[TM].
+
+If in doubt about where the exact origin is, it is often safe to use the
+center of the image, which might be off, but maybe not by a whole lot, so
+it should be a reasonably good place for most coregistration, algorithms
+to start matching images.
+
+What do we need to find the center of the 'image'?  We need the dimensions of
+the volumes, because the 'image' here will be a volume, not a slice.  Once
+we know what the image dimensions are, then if we move in halfway, we'll be
+about at the center of the image.
+
+```
+# Get the image dimensions from the header
+x_dim, y_dim, z_dim = header['dim'][1:4]
+print("Image dimensions are: {}\n".format(str(header['dim'])))
+
+# Calculate the coordinates for the center of the image
+# 0-indexing and integer division, hence -1 and // instead of /
+# (At least, I think that's right)
+x_ctr = (x_dim-1)//2
+y_ctr = (y_dim-1)//2
+z_ctr = (z_dim-1)//2
+print("x-center is: {}   y-center is: {}   z-center is: {}\n".format(
+      x_ctr, y_ctr, z_ctr))
+```
+
+Oh, hang on, mate!  Look at the values we had:  0, -127.5, -127.5.  There's a
+sign there!  Where does that come from?  Well, we heard a rumor that, if
+we take the diagonal of the affine matrix, multiply it by -1, that will
+give us the right sign for the sform matrix entries.  So, if we have this
+sform matrix
+
+```
+  -1.    -0.    -0.     0. 
+  -0.     1.    -0.  -127.5
+   0.     0.     1.  -127.5
+   0.     0.     0.     1. 
+```
+
+the diagonal will be `[-1, 1, 1]`, so the signs for the origin column will
+be `[+, -, -]` after we reverse them.
+
+Now we have the pieces:  We have a sign vector of `[+, -, -]` and we have
+the centers (in absolute value) at `[x_ctr, y_ctr, z_ctr]`, and we can
+calculate that by using
+
+```
+# Get the first three elements of the sform matrix diagonal and reverse sign
+diag = sform.diagonal()[0:3] * -1
+
+# Set the x-, y-, and z- centers to the correctly signed values for the center
+[x_ctr, y_ctr, z_ctr] = diag * np.asarray([x_ctr, y_ctr, z_ctr])
+print("New x center: {}   New y center: {}   New z center: {}\n".format(
+           x_ctr, y_ctr, z_ctr))
+```
+
+Now we need to put those into the sform matrix and save it.
+
+```
+print("Resetting the origin coordinates")
+# Set the sform and qform entries we extracted to the new, corrected values
+sform[0:3,3] = qform[0:3,3] = x_ctr, y_ctr, z_ctr
+
+# Save them back to the image
+image.set_sform(sform)
+image.set_qform(qform)
+
+# We have to create a new image file, and it's good not to overwrite original
+# data anyway, isn't it?
+new_image_file = image_file.replace('.nii', '_origin_reset.nii')
+nib.save(image, new_image_file)
+```
+
+If it is safe to assume that the origin is within some distance of the center
+of the image, which it should be somehow.  Then we could come up with something
+fancier that would detect whether an image has an origin that is, say, _D_
+units from the center.
+
+```
+# Allowed offset:  How many voxels away from center will we let the
+# origin get before we reset to center?  This is the Euclidean distance
+# so setting this to 10 implies that, if 100 >= x^2 + y^2 + z^2, the
+# origin should be reset.
+origin_offset = 10
+
+# Get the current sform origin
+sform_x, sform_y, sform_z = sform[0:3,3]
+
+# Calculate the Euclidean distance from the center of the image
+# of the current origin
+origin_distance = sqrt((sform_x - x_ctr)**2 +
+                       (sform_y - y_ctr)**2 +
+                       (sform_z - z_ctr)**2)
+
+# Calculate the distance from the center of each current origin
+x_diff = abs(sform_x - x_ctr)
+y_diff = abs(sform_y - y_ctr)
+z_diff = abs(sform_z - z_ctr)
+
+# If we are outside of the offset limits, print the current distances along the axes
+if origin_distance > origin_offset:
+    print("The x origin coordinate {:8.2f} is {:8.2f} voxels from center.".format(
+          sform_x, x_diff))
+    print("The y origin coordinate {:8.2f} is {:8.2f} voxels from center.".format(
+          sform_y, y_diff))
+    print("The z origin coordinate {:8.2f} is {:8.2f} voxels from center.".format(
+          sform_z, z_diff))
+```
+
+Finally, we can check our work with
+
+```
+$ fslorient -getsform T1w_origin_reset.nii 
+-1 -0 -0 87 -0 1 -0 -127 0 0 1 -127 0 0 0 1 
+
+$ fslorient -getqform T1w_origin_reset.nii 
+-1 0 -0 87 0 1 -0 -127 0 0 1 -127 0 0 0 1
+```
