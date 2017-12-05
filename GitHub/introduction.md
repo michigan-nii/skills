@@ -73,4 +73,33 @@ use GitHub to create the One True version.  You do this in GitHub by
 creating a repo (repository:  The name for a collection of files that
 travel together).
 
+Then, if the repository contains scripts and the like, you would use
+`git` to make a local copy, write scripts, add them to the local copy,
+then `push` them back to the repository.  When you go to a different
+machine, or a new person needs a copy, you (or they) `pull` a copy
+from the repository.
 
+When multiple people are _changing_ the contents of the repository,
+it is customary in GitHub land to  _fork_ a copy.  That's just a
+way to make a copy of the One True files into your own GitHub account.
+Once you have that copy, you would, again typically, make a new
+_branch_.  A branch is just a convenient way to manage a local copy.
+
+So, for example, suppose I am working on some changes to our
+preprocessing scripts.  I first fork the lab's script repository;
+then I `pull` that to the computer on which we do analyses.  I then
+make a branch.  Now I _checkout_ the branch to work on it.  Ah, but
+someone just got back from the scanner, and there is a subject that
+needs preprocessing.  I simply checkout the _master_, which has all
+the original scripts, and run the subject, when the subject is done,
+I checkout the branch I made with my changes in it, and keep working.
+
+Once I have changes that I like, I push the whole branch to GitHub.
+I go to GitHub, switch to the new branch, and send a request to whoever
+manages the One True repo to take and accept my changes.  We can
+then talk about them, make more changes, make changes to the changes,
+and finally, the changes get accepted into the repo (or not), and
+become part of the One True set of scripts.
+
+Every place that uses the One True set can then update (or not) with
+one command by pulling the changes.
